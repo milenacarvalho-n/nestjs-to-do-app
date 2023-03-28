@@ -1,5 +1,6 @@
-export class Task {
-    id: number;    
-    description: string; 
-    completed: boolean;
+import { Document } from 'mongoose';
+
+export class Task extends Document {
+  description: string;
+  completed: boolean;
 }

@@ -1,43 +1,34 @@
 import { Injectable } from '@nestjs/common';
+import { Model } from 'mongoose';
 import { Task } from './task';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class TaskService {
-    tasks: Task[] =
- [
-        {id: 1, description: 'Tarefa 1', completed: false},
-        {id: 2, description: 'Tarefa 2', completed: false},
-        {id: 3, description: 'Tarefa 3', completed: true},
-        {id: 4, description: 'Tarefa 4', completed: false},
-        {id: 5, description: 'Tarefa 5', completed: false},
-        {id: 6, description: 'Tarefa 6', completed: false},
-        {id: 7, description: 'Tarefa 7', completed: false},
-        {id: 8, description: 'Tarefa 8', completed: false},
-        {id: 9, description: 'Tarefa 9', completed: false},
-        {id: 10, description: 'Tarefa 10', completed: false},
-        {id: 11, description: 'Tarefa 11', completed: false},
-        {id: 12, description: 'Tarefa 12', completed: false},
-    ];
+  // responsável pela integração com o banco de dados
 
-    getAll() {
-        return this.tasks;
-    }
+  constructor(@InjectModel('Task') private readonly taskModel: Model<Task>) {}
 
-    getById(id: number){
-        const task = this.tasks.find((value) => value.id == id);
-        return task;
-    }
+  async getAll() {
+    // busca infos no banco
+    return await this.taskModel.find().exec();
+  }
 
-    create(task: Task){
+  async getById(id: string) {
+    return await this.taskModel.findById(id).exec();
+  }
 
-    }
+  async create(task: Task) {
+    const createdTask = new this.taskModel(task);
+    return await createdTask.save();
+  }
 
-    update(task: Task){
+  async update(id: string, task: Task) {
+    await this.taskModel.updateOne({ _id: id }, task).exec();
+    return this.getById(id);
+  }
 
-    }
-
-    delete(id:number){
-
-    }
-
+  async delete(id: string) {
+    return await this.taskModel.deleteOne({ _id: id }).exec();
+  }
 }
